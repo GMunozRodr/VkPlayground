@@ -8,7 +8,9 @@
 #include <slang/slang.h>
 #include <Volk/volk.h>
 
+#include "vulkan_base.hpp"
 #include "vulkan_binding.hpp"
+#include "vulkan_shader.hpp"
 
 struct ShaderReflectionData
 {
@@ -142,7 +144,7 @@ inline ShaderReflectionData::ShaderReflectionData(slang::ProgramLayout* p_Layout
     for (uint32_t i = 0; i < p_Layout->getEntryPointCount(); i++)
     {
         slang::EntryPointLayout* l_EntryPoint = p_Layout->getEntryPointByIndex(i);
-        const VkShaderStageFlagBits l_Stage = VulkanShader::getVkStageFromSlangStage(l_EntryPoint->getStage());
+        const VkShaderStageFlagBits l_Stage = getVkStageFromSlangStage(l_EntryPoint->getStage());
         stageFlags |= l_Stage;
         if (l_Stage == VK_SHADER_STAGE_VERTEX_BIT)
         {

@@ -4,7 +4,7 @@
 #include <vulkan/vk_enum_string_helper.h>
 
 #include "utils/logger.hpp"
-#include "utils/vulkan_base.hpp"
+#include "vulkan_base.hpp"
 #include "vulkan_context.hpp"
 #include "vulkan_device.hpp"
 
@@ -67,6 +67,7 @@ void* VulkanMemArray::map(const VkDeviceSize p_Size, const VkDeviceSize p_Offset
 
     void* l_Data = l_Device.getMemoryAllocator().map(m_Allocation);
     LOG_DEBUG("Mapped buffer (ID:", m_ID, ") memory with size ", VulkanMemoryAllocator::compactBytes(p_Size), " and offset ", p_Offset);
+    m_MappedData = l_Data;
     return l_Data;
 }
 
@@ -140,6 +141,9 @@ void VulkanBuffer::free()
     
     if (m_Allocation)
     {
+        if (isMemoryMapped())
+            unmap();
+
         Logger::pushContext("Buffer memory free");
         l_Device.getMemoryAllocator().deallocate(m_Allocation);
         m_Allocation = VK_NULL_HANDLE;

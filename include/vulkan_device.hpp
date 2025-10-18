@@ -88,6 +88,7 @@ public:
     bool freePipelineLayout(const VulkanPipelineLayout& p_Layout) { return freeSubresource<VulkanPipelineLayout>(p_Layout.getID()); }
 
 	ResourceID createShaderModule(VulkanShader& p_ShaderCode, VkShaderStageFlagBits p_Stage);
+    ResourceID createShaderModule(std::span<const uint32_t> p_SpirvCode, VkShaderStageFlagBits p_Stage);
     VulkanShaderModule& getShaderModule(const ResourceID p_ID) { return *getSubresource<VulkanShaderModule>(p_ID); }
     [[nodiscard]] const VulkanShaderModule& getShaderModule(const ResourceID p_ID) const { return *getSubresource<VulkanShaderModule>(p_ID); }
     bool freeShaderModule(const ResourceID p_ID) { return freeSubresource<VulkanShaderModule>(p_ID); }

@@ -15,7 +15,7 @@
 #include "vulkan_queues.hpp"
 #include "vulkan_render_pass.hpp"
 #include "utils/logger.hpp"
-#include "utils/vulkan_base.hpp"
+#include "vulkan_base.hpp"
 
 std::map<VkImageLayout, VulkanMemoryBarrierBuilder::AccessData> VulkanMemoryBarrierBuilder::s_TransitionMapping = {
     {VK_IMAGE_LAYOUT_UNDEFINED,

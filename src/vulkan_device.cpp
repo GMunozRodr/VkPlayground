@@ -7,7 +7,7 @@
 #include "vulkan_context.hpp"
 #include "ext/vulkan_extension_management.hpp"
 #include "utils/logger.hpp"
-#include "utils/vulkan_base.hpp"
+#include "vulkan_base.hpp"
 
 VulkanQueue VulkanDevice::getQueue(const QueueSelection& p_QueueSelection) const
 {
@@ -540,7 +540,11 @@ void VulkanDevice::updateDescriptorSets(const std::span<const VkWriteDescriptorS
 
 ResourceID VulkanDevice::createShaderModule(VulkanShader& p_ShaderCode, const VkShaderStageFlagBits p_Stage)
 {
-    const std::vector<uint32_t> l_Code = p_ShaderCode.getSPIRVForStage(p_Stage);
+    const std::vector<uint32_t> l_Code = p_ShaderCode.getSpirvForStage(p_Stage);
+    if (p_ShaderCode.getStatus().status == VulkanShader::Result::NOT_READY)
+    {
+        LOG_ERR("Tried to create module for stage ", string_VkShaderStageFlagBits(p_Stage), ", but shader is not compiled");
+    }
     if (p_ShaderCode.getStatus().status == VulkanShader::Result::FAILED)
     {
         LOG_ERR("Failed to load shader -> ", p_ShaderCode.getStatus().error);
@@ -551,6 +555,22 @@ ResourceID VulkanDevice::createShaderModule(VulkanShader& p_ShaderCode, const Vk
     l_CreateInfo.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
     l_CreateInfo.codeSize = 4 * l_Code.size();
     l_CreateInfo.pCode = l_Code.data();
+
+    VkShaderModule l_Shader;
+    VULKAN_TRY(getTable().vkCreateShaderModule(m_VkHandle, &l_CreateInfo, nullptr, &l_Shader));
+
+    VulkanShaderModule* l_NewRes = ARENA_ALLOC(VulkanShaderModule){m_ID, l_Shader, p_Stage};
+    m_Subresources[l_NewRes->getID()] = l_NewRes;
+    LOG_DEBUG("Created shader (ID:", l_NewRes->getID(), ") and stage ", string_VkShaderStageFlagBits(p_Stage));
+    return l_NewRes->getID();
+}
+
+ResourceID VulkanDevice::createShaderModule(const std::span<const uint32_t> p_SpirvCode, const VkShaderStageFlagBits p_Stage)
+{
+    VkShaderModuleCreateInfo l_CreateInfo{};
+    l_CreateInfo.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
+    l_CreateInfo.codeSize = 4 * p_SpirvCode.size();
+    l_CreateInfo.pCode = p_SpirvCode.data();
 
     VkShaderModule l_Shader;
     VULKAN_TRY(getTable().vkCreateShaderModule(m_VkHandle, &l_CreateInfo, nullptr, &l_Shader));
@@ -725,6 +745,8 @@ bool VulkanDevice::free()
     {
         m_ExtensionManager->freeExtensions();
     }
+
+    m_MemoryAllocator.free();
 
     if (!m_VkHandle)
     {

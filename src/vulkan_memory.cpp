@@ -9,7 +9,7 @@
 #include "utils/logger.hpp"
 #include "vulkan_context.hpp"
 #include "vulkan_device.hpp"
-#include "utils/vulkan_base.hpp"
+#include "vulkan_base.hpp"
 
 std::string VulkanMemoryAllocator::compactBytes(const VkDeviceSize p_Bytes)
 {
@@ -22,6 +22,17 @@ std::string VulkanMemoryAllocator::compactBytes(const VkDeviceSize p_Bytes)
         l_Unit++;
     }
     return std::to_string(l_Exact) + " " + l_Units[l_Unit];
+}
+
+bool VulkanMemoryAllocator::free()
+{
+    if (m_Allocator != VK_NULL_HANDLE)
+    {
+        vmaDestroyAllocator(m_Allocator);
+        m_Allocator = VK_NULL_HANDLE;
+        return true;
+    }
+    return false;
 }
 
 const VkPhysicalDeviceMemoryProperties& MemoryStructure::getMemoryProperties() const

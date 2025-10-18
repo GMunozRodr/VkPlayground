@@ -1,7 +1,7 @@
 #pragma once
 
 #include <Vulkan/vk_enum_string_helper.h>
-#include "logger.hpp"
+#include "utils/logger.hpp"
 
 #ifdef _DEBUG
     #define VULKAN_TRY(call)                                                                    \

@@ -5,7 +5,7 @@
 #include <vulkan/vk_enum_string_helper.h>
 
 #include "utils/logger.hpp"
-#include "utils/vulkan_base.hpp"
+#include "vulkan_base.hpp"
 #include "vulkan_command_buffer.hpp"
 #include "vulkan_context.hpp"
 #include "vulkan_device.hpp"

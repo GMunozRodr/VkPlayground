@@ -13,8 +13,7 @@
 #include "vulkan_queues.hpp"
 #include "ext/vulkan_extension_management.hpp"
 #include "utils/logger.hpp"
-#include "utils/vulkan_base.hpp"
-#include "utils/vulkan_base.hpp"
+#include "vulkan_base.hpp"
 
 std::array<const char*, 1> g_ValidationLayers = {"VK_LAYER_KHRONOS_validation"};
 

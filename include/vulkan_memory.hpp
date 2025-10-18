@@ -113,6 +113,8 @@ public:
     static std::string compactBytes(VkDeviceSize p_Bytes);
 
 private:
+    bool free();
+
     struct AllocationReturn
     {
         uintptr_t vkObj;

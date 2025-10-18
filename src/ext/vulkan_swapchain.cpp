@@ -7,7 +7,7 @@
 #include "vulkan_device.hpp"
 #include "vulkan_sync.hpp"
 #include "utils/logger.hpp"
-#include "utils/vulkan_base.hpp"
+#include "../vulkan_base.hpp"
 
 VulkanSwapchainExtension* VulkanSwapchainExtension::get(const VulkanDevice& p_Device)
 {

@@ -4,7 +4,7 @@
 
 #include "vulkan_device.hpp"
 #include "utils/logger.hpp"
-#include "utils/vulkan_base.hpp"
+#include "../vulkan_base.hpp"
 
 VulkanExternalMemoryExtension* VulkanExternalMemoryExtension::get(const VulkanDevice& p_Device)
 {

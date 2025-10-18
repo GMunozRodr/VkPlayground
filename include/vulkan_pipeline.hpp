@@ -7,12 +7,13 @@
 #include "utils/identifiable.hpp"
 #include "vulkan_binding.hpp"
 
+class ShaderHash;
 class VulkanDevice;
 
 struct VulkanPipelineBuilder
 {
     explicit VulkanPipelineBuilder(ResourceID p_Device);
-
+    
     void addShaderStage(ResourceID p_Shader, std::string_view p_Entrypoint = "main");
     void resetShaderStages();
 
@@ -47,6 +48,8 @@ struct VulkanPipelineBuilder
 
     [[nodiscard]] size_t getShaderStageCount() const { return m_ShaderStages.size(); }
 
+    [[nodiscard]] size_t getHash(size_t p_Hash) const;
+
 private:
     VkPipelineVertexInputStateCreateInfo m_VertexInputState{};
     VkPipelineInputAssemblyStateCreateInfo m_InputAssemblyState{};
@@ -59,6 +62,16 @@ private:
     VkPipelineDynamicStateCreateInfo m_DynamicState{};
 
     bool m_TesellationStateEnabled = false;
+
+    [[nodiscard]] size_t getVertexInputHash() const;
+    [[nodiscard]] size_t getInputAssemblyHash() const;
+    [[nodiscard]] size_t getTessellationHash() const;
+    [[nodiscard]] size_t getViewportStateHash() const;
+    [[nodiscard]] size_t getRasterizationHash() const;
+    [[nodiscard]] size_t getMultisampleHash() const;
+    [[nodiscard]] size_t getDepthStencilHash() const;
+    [[nodiscard]] size_t getColorBlendHash() const;
+    [[nodiscard]] size_t getDynamicStateHash() const;
 
     struct ShaderData
     {
@@ -117,9 +130,11 @@ public:
 private:
     void free() override;
 
-    VulkanPipelineLayout(uint32_t p_Device, VkPipelineLayout p_Handle);
+    VulkanPipelineLayout(uint32_t p_Device, VkPipelineLayout p_Handle, size_t p_Hash = 0);
 
     VkPipelineLayout m_VkHandle = VK_NULL_HANDLE;
+
+    size_t m_Hash = 0;
 
     friend class VulkanDevice;
     friend class VulkanCommandBuffer;
