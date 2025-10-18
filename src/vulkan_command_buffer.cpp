@@ -390,7 +390,7 @@ void VulkanCommandBuffer::ecmdDumpStagingBufferToImage(const ResourceID p_Image,
 
     if (l_Layout != VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL)
     {
-        VulkanMemoryBarrierBuilder l_BarrierBuilder{getID(), VK_PIPELINE_STAGE_TRANSFER_BIT, VK_PIPELINE_STAGE_TRANSFER_BIT, 0};
+        VulkanMemoryBarrierBuilder l_BarrierBuilder{getDeviceID(), VK_PIPELINE_STAGE_TRANSFER_BIT, VK_PIPELINE_STAGE_TRANSFER_BIT, 0};
         l_BarrierBuilder.addImageMemoryBarrier(p_Image, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
         cmdPipelineBarrier(l_BarrierBuilder);
     }
@@ -398,7 +398,7 @@ void VulkanCommandBuffer::ecmdDumpStagingBufferToImage(const ResourceID p_Image,
     cmdCopyBufferToImage(l_Device.getStagingBufferData().stagingBuffer, p_Image, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, l_RegionArray);
     if (l_Layout != VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL && p_KeepLayout)
     {
-        VulkanMemoryBarrierBuilder l_BarrierBuilder{getID(), VK_PIPELINE_STAGE_TRANSFER_BIT, VK_PIPELINE_STAGE_TRANSFER_BIT, 0};
+        VulkanMemoryBarrierBuilder l_BarrierBuilder{getDeviceID(), VK_PIPELINE_STAGE_TRANSFER_BIT, VK_PIPELINE_STAGE_TRANSFER_BIT, 0};
         l_BarrierBuilder.addImageMemoryBarrier(p_Image, l_Layout);
         cmdPipelineBarrier(l_BarrierBuilder);
     }
@@ -438,12 +438,6 @@ void VulkanCommandBuffer::ecmdDumpDataIntoImage(const ResourceID p_DestImage, co
     void* l_StagePtr = l_Device.mapStagingBuffer(l_Size, 0);
     memcpy(l_StagePtr, p_Data, l_Size);
     ecmdDumpStagingBufferToImage(p_DestImage, p_Extent, {0, 0, 0}, p_KeepLayout);
-
-    if (l_InitStagingBufferSize != l_StagingBufferSize)
-    {
-        l_Device.freeStagingBuffer();
-        l_Device.configureStagingBuffer(l_InitStagingBufferSize, l_StagingBufferInfo.queue);
-    }
 }
 
 void VulkanCommandBuffer::cmdPushConstant(const ResourceID p_Layout, const VkShaderStageFlags p_StageFlags, const uint32_t p_Offset, const uint32_t p_Size, const void* p_Values) const
